@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Raise a grievance — Grievance Desk</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div id="nav-root"></div>
+  <div class="container">
+    <h1 class="page-title">Raise a grievance</h1>
+    <p class="page-subtitle">Describe your issue in detail. Attach supporting files (images, PDFs, docs) if you have any.</p>
+    <div class="card" style="max-width:720px;">
+      <div id="alert"></div>
+      <form class="form" id="raise-form" enctype="multipart/form-data" novalidate style="max-width:none;">
+        <div class="row">
+          <label>Title <input name="title" required maxlength="140" placeholder="Short summary" /></label>
+          <label>Category
+            <select name="category" id="category" required></select>
+          </label>
+        </div>
+        <div class="row">
+          <label>Priority
+            <select name="priority">
+              <option value="low">Low</option>
+              <option value="medium" selected>Medium</option>
+              <option value="high">High</option>
+              <option value="urgent">Urgent</option>
+            </select>
+          </label>
+          <label>Attachments
+            <input name="attachments" type="file" multiple accept="image/*,application/pdf,.doc,.docx,.txt" />
+          </label>
+        </div>
+        <label>Description
+          <textarea name="description" required minlength="10" maxlength="4000" placeholder="Explain the issue, include dates, names, locations as relevant..."></textarea>
+        </label>
+        <button class="btn" type="submit" id="submit-btn">Submit grievance</button>
+        <div class="hint">You'll get an email-style confirmation in your inbox logs. Admins are notified instantly.</div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/nav.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const user = requireRole('student');
+      if (!user) return;
+      renderNav('raise');
+
+      // Populate category dropdown from backend
+      try {
+        const out = await api.get('/grievances/categories');
+        const sel = document.getElementById('category');
+        sel.innerHTML = out.categories.map((c) => `<option value="${c}">${c}</option>`).join('');
+      } catch (err) {
+        console.error(err);
+      }
+
+      const form = document.getElementById('raise-form');
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('submit-btn');
+        const alertBox = document.getElementById('alert');
+        alertBox.innerHTML = '';
+        btn.disabled = true; btn.textContent = 'Submitting...';
+        try {
+          const fd = new FormData(form);
+          const out = await api.upload('/grievances', fd);
+          alertBox.innerHTML = '<div class="alert success">Grievance submitted. Redirecting...</div>';
+          setTimeout(() => { location.href = `grievance.html?id=${out.grievance._id}`; }, 700);
+        } catch (err) {
+          let msg = err.message;
+          if (err.payload && Array.isArray(err.payload.errors)) {
+            msg += ': ' + err.payload.errors.map((e) => e.message || e).join('; ');
+          }
+          alertBox.innerHTML = `<div class="alert error">${escapeHtml(msg)}</div>`;
+          btn.disabled = false; btn.textContent = 'Submit grievance';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

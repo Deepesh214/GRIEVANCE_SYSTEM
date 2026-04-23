@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My queue — Grievance Desk</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div id="nav-root"></div>
+  <div class="container">
+    <h1 class="page-title">Grievance Resolver queue</h1>
+    <p class="page-subtitle">Grievances assigned to you. Review each item, update status, and upload evidence.</p>
+
+    <div class="grid stats" id="stats"></div>
+
+    <div class="card mt-3 mb-2">
+      <form id="filter-form" class="flex wrap">
+        <select name="status">
+          <option value="">All</option>
+          <option value="in_progress">In progress</option>
+          <option value="awaiting_input">Awaiting input</option>
+          <option value="resolved">Resolved</option>
+          <option value="rejected">Rejected</option>
+        </select>
+        <button class="btn small" type="submit">Apply</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <div id="list"></div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/officer.js"></script>
+</body>
+</html>

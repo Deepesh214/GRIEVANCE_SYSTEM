@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sign up - Grievance Desk</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div id="nav-root"></div>
+  <div class="container">
+    <div class="card" style="max-width:620px; margin:40px auto;">
+      <h1 class="page-title">Create your account</h1>
+      <p class="page-subtitle" id="page-subtitle">
+        Use your official college ID so we can verify you and route your grievances correctly.
+      </p>
+
+      <div id="invite-banner"></div>
+      <div id="alert"></div>
+
+      <form class="form" id="signup-form" novalidate style="max-width:none;">
+        <div class="row">
+          <label>Full name <input name="name" required maxlength="100" /></label>
+          <label>College ID <input name="collegeId" required placeholder="e.g. CS2026A123" /></label>
+        </div>
+        <div class="row">
+          <label>Email <input name="email" id="email-field" type="email" required /></label>
+          <label>Phone <input name="phone" type="tel" required minlength="7" maxlength="20" placeholder="+91 ..." /></label>
+        </div>
+        <label>Department <input name="department" placeholder="e.g. Computer Science" /></label>
+        <label>Password <input name="password" type="password" required minlength="6" autocomplete="new-password" /></label>
+
+        <input type="hidden" name="token" id="invite-token" />
+
+        <div class="hint" id="signup-hint">
+          Self-signup creates a <b>Student</b> account. Grievance Resolver and Grievance Officer accounts are <b>invite-only</b> - the Grievance Officer can invite you from the Access Management page, and you'll get a signup link in your inbox.
+        </div>
+        <button class="btn" type="submit" id="submit-btn">Create account</button>
+        <div class="hint">Already have an account? <a href="login.html">Log in</a>.</div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/nav.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async function () {
+      renderNav();
+      var form = document.getElementById('signup-form');
+      var alertBox = document.getElementById('alert');
+      var inviteBanner = document.getElementById('invite-banner');
+      var params = new URLSearchParams(location.search);
+      var inviteToken = params.get('invite');
+      var inviteRole = null;
+
+      if (inviteToken) {
+        try {
+          var out = await api.get('/auth/invite/' + encodeURIComponent(inviteToken));
+          inviteRole = out.invite.role;
+          var roleLabel = inviteRole === 'admin' ? 'Grievance Officer' : 'Grievance Resolver';
+          inviteBanner.innerHTML = '<div class="alert success"><b>Invite accepted.</b> You are signing up as <b>' +
+            escapeHtml(roleLabel) + '</b>, invited by ' + escapeHtml(out.invite.invitedBy || 'an administrator') +
+            '. Email and role are locked below.</div>';
+          document.getElementById('email-field').value = out.invite.email;
+          document.getElementById('email-field').readOnly = true;
+          if (out.invite.phone) document.querySelector('input[name=phone]').value = out.invite.phone;
+          document.getElementById('invite-token').value = inviteToken;
+          document.getElementById('signup-hint').textContent = 'You were invited as ' + roleLabel + '. Fill in the remaining details below to complete signup.';
+          document.getElementById('page-subtitle').textContent = 'Welcome! Complete your ' + roleLabel + ' account below.';
+        } catch (err) {
+          inviteBanner.innerHTML = '<div class="alert error">Invite invalid: ' + escapeHtml(err.message) + '. You can still sign up as a Student.</div>';
+        }
+      }
+
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        var btn = document.getElementById('submit-btn');
+        alertBox.innerHTML = '';
+        btn.disabled = true; btn.textContent = 'Creating...';
+        try {
+          var body = Object.fromEntries(new FormData(form));
+          var endpoint = inviteToken ? '/auth/accept-invite' : '/auth/signup';
+          var out = await api.post(endpoint, body);
+          api.setToken(out.token);
+          api.setUser(out.user);
+          if (out.user.role === 'admin') location.href = 'admin.html';
+          else if (out.user.role === 'officer') location.href = 'officer.html';
+          else location.href = 'dashboard.html';
+        } catch (err) {
+          var msg = err.message;
+          if (err.payload && Array.isArray(err.payload.errors)) {
+            msg += ': ' + err.payload.errors.map(function (x) { return x.message || x; }).join('; ');
+          }
+          alertBox.innerHTML = '<div class="alert error">' + escapeHtml(msg) + '</div>';
+          btn.disabled = false; btn.textContent = 'Create account';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
+<!-- padding padding padding padding padding padding padding padding padding -->
+<!-- padding padding padding padding padding padding padding padding padding -->
+<!-- padding padding padding padding padding padding padding padding padding -->

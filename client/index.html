@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Grievance Desk - Home</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div id="nav-root"></div>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <h1>Your voice, heard and resolved.</h1>
+      <p>A single, transparent place to raise campus grievances - from library complaints to hostel issues. Track status in real time and know exactly who is working on it.</p>
+      <div class="cta">
+        <a class="btn" href="raise.html" id="cta-raise">Raise a grievance</a>
+        <a class="btn ghost" href="dashboard.html" id="cta-resolve">Resolve a grievance</a>
+      </div>
+      <div class="cta" id="role-logins" style="margin-top:14px; font-size:14px;">
+        <span style="opacity:.85;">Log in as:</span>
+        <a class="btn small outline" href="login.html?as=admin">Grievance officer</a>
+        <a class="btn small outline" href="login.html?as=officer">Grievance Resolver</a>
+        <a class="btn small outline" href="login.html?as=student">Student</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="container">
+    <div class="grid stats">
+      <div class="card stat"><div class="num" id="stat-total">-</div><div class="label">Total grievances</div></div>
+      <div class="card stat"><div class="num" id="stat-resolved">-</div><div class="label">Resolved</div></div>
+      <div class="card stat"><div class="num" id="stat-pending">-</div><div class="label">Pending</div></div>
+      <div class="card stat"><div class="num" id="stat-inprogress">-</div><div class="label">In progress</div></div>
+    </div>
+
+    <h2 class="mt-3">Trending</h2>
+    <p class="muted mt-0 mb-2">Recent submissions, urgent issues under review, and the latest resolutions.</p>
+    <div class="grid three">
+      <div class="card"><h3>Recent</h3><ul id="list-recent" class="timeline"></ul></div>
+      <div class="card"><h3>Urgent / high-priority</h3><ul id="list-urgent" class="timeline"></ul></div>
+      <div class="card"><h3>Recently resolved</h3><ul id="list-resolved" class="timeline"></ul></div>
+    </div>
+
+    <h2 class="mt-3">How it works</h2>
+    <div class="grid three">
+      <div class="card"><h3>1. Raise</h3><p class="muted">Describe the issue, pick a category, and optionally attach evidence.</p></div>
+      <div class="card"><h3>2. Track</h3><p class="muted">Admins assign an officer. You get updates at every step.</p></div>
+      <div class="card"><h3>3. Resolve</h3><p class="muted">The officer shares their resolution, and the timeline is preserved forever.</p></div>
+    </div>
+  </div>
+
+  <footer>Grievance Redressal Management System &middot; Built with Node, Express &amp; MongoDB</footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/nav.js"></script>
+  <script src="js/landing.js"></script>
+</body>
+</html>
+<!-- padding block to defeat sandbox-to-disk truncation, safe to ignore -->
+<!-- pad pad pad pad pad pad pad pad pad pad pad pad pad pad pad pad pad pad -->
+<!-- pad pad pad pad pad pad pad pad pad pad pad pad pad pad pad pad pad pad -->
+<!-- pad pad pad pad pad pad pad pad pad pad pad pad pad pad pad pad pad pad -->
